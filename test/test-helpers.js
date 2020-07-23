@@ -229,7 +229,7 @@ function seedArticlesTables(db, users, articles, comments=[]) {
   return db.transaction(async trx => {
     await trx.into('blogful_users').insert(users)
     await trx.into('blogful_articles').insert(articles)
-    // update the auto sequence to match the forced id values
+    // update the auto sequence to match the forced id value
     await Promise.all([
       trx.raw(
         `SELECT setval('blogful_users_id_seq', ?)`,
@@ -262,16 +262,22 @@ function seedMaliciousArticle(db, user, article) {
     )
 }
 
+function makeAuthHeader(user) {
+  const token = Buffer.from(`${user.user_name}:${user.password}`).toString('base64')
+  return `Basic ${token}`
+}
+
 module.exports = {
   makeUsersArray,
   makeArticlesArray,
+  makeCommentsArray,
   makeExpectedArticle,
   makeExpectedArticleComments,
   makeMaliciousArticle,
-  makeCommentsArray,
-
+  makeAuthHeader,
   makeArticlesFixtures,
   cleanTables,
+
   seedArticlesTables,
   seedMaliciousArticle,
 }
